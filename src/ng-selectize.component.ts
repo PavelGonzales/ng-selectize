@@ -8,6 +8,7 @@ import {
 	Component,
 	ViewChild,
 	Output,
+	NgZone,
 	EventEmitter, IterableDiffers, IterableDiffer, IterableChangeRecord, IterableChanges
 } from '@angular/core';
 import {
@@ -55,7 +56,7 @@ export class NgSelectizeComponent implements OnInit, OnChanges, DoCheck, Control
 	private onTouchedCallback: () => {};
 	private onChangeCallback: (_: any) => {};
 
-	constructor(private _differs: IterableDiffers) {
+	constructor(private _differs: IterableDiffers, private zone: NgZone,) {
 	}
 
 	ngOnInit(): void {
@@ -63,12 +64,14 @@ export class NgSelectizeComponent implements OnInit, OnChanges, DoCheck, Control
 	}
 
 	reset() {
-		this.selectize = $(this.selectizeInput.nativeElement).selectize(this.config)[0].selectize;
-		this.selectize.on('change', this.onSelectizeValueChange.bind(this));
-		this.selectize.on('blur', this.onBlurEvent.bind(this));
-
-		this.updatePlaceholder();
-		this.onEnabledStatusChange();
+		this.zone.runOutsideAngular(() => {
+			this.selectize = $(this.selectizeInput.nativeElement).selectize(this.config)[0].selectize;
+			this.selectize.on('change', this.onSelectizeValueChange.bind(this));
+			this.selectize.on('blur', this.onBlurEvent.bind(this));
+	
+			this.updatePlaceholder();
+			this.onEnabledStatusChange();
+		})
 	}
 
 	/**
