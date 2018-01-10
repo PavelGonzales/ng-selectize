@@ -64,13 +64,15 @@ export class NgSelectizeComponent implements OnInit, OnChanges, DoCheck, Control
 	}
 
 	reset() {
-		console.log('новая либа')
-		this.selectize = $(this.selectizeInput.nativeElement).selectize(this.config)[0].selectize;
-		this.selectize.on('change', this.onSelectizeValueChange.bind(this));
-		this.selectize.on('blur', this.onBlurEvent.bind(this));
-
-		this.updatePlaceholder();
-		this.onEnabledStatusChange();
+		this.zone.runOutsideAngular(() => {
+			console.log('сбилдил селектайз')
+			this.selectize = $(this.selectizeInput.nativeElement).selectize(this.config)[0].selectize;
+			this.selectize.on('change', this.onSelectizeValueChange.bind(this));
+			this.selectize.on('blur', this.onBlurEvent.bind(this));
+	
+			this.updatePlaceholder();
+			this.onEnabledStatusChange();
+		})
 	}
 
 	/**
